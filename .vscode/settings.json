@@ -1,0 +1,10 @@
+{
+    "editor.rulers": [
+        80,
+        120
+    ],
+    // working around bug in rust-analyzer 0.2.408
+    "rust-analyzer.diagnostics.disabled": [
+        "macro-error"
+    ]
+}
