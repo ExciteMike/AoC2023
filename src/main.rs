@@ -110,104 +110,97 @@ fn day01() {
 }
 #[test]
 fn day02() {
-    do_test(2, 9651, 10560);
+    do_test(2, 0, 0);
 }
 #[test]
 fn day03() {
-    do_test(3, 8123, 2620);
+    do_test(3, 0, 0);
 }
 #[test]
 fn day04() {
-    do_test(4, 588, 911);
+    do_test(4, 0, 0);
 }
 #[test]
 fn day05() {
-    do_test(5, "CFFHVVHNC", "FSZWBPTBG");
+    do_test(5, 0, 0);
 }
 #[test]
 fn day06() {
-    do_test(6, 1531, 2518);
+    do_test(6, 0, 0);
 }
 #[test]
 fn day07() {
-    do_test(7, 2104783, 5883165);
+    do_test(7, 0, 0);
 }
 #[test]
 fn day08() {
-    do_test(8, 1763, 671160);
+    do_test(8, 0, 0);
 }
 #[test]
 fn day09() {
-    do_test(9, 6271, 2458);
+    do_test(9, 0, 0);
 }
 #[test]
 fn day10() {
-    const DAY10P2: &str = "
-  [][][][]  [][][]      [][]    [][][]    []    []  [][][][]    [][]    []    []
-  []        []    []  []    []  []    []  []    []  []        []    []  []    []
-  [][][]    []    []  []        []    []  [][][][]  [][][]    []        [][][][]
-  []        [][][]    []  [][]  [][][]    []    []  []        []  [][]  []    []
-  []        []        []    []  []        []    []  []        []    []  []    []
-  []        []          [][][]  []        []    []  []          [][][]  []    []";
-    do_test(10, 10760, DAY10P2);
+    do_test(10, 0, 0);
 }
 #[test]
 fn day11() {
-    do_test(11, 316888, 35270398814u64);
+    do_test(11, 0, 0);
 }
 #[test]
 fn day12() {
-    do_test(12, 447, 446);
+    do_test(12, 0, 0);
 }
 #[test]
 fn day13() {
-    do_test(13, 5588, 23958);
+    do_test(13, 0, 0);
 }
 #[test]
 fn day14() {
-    do_test(14, 913, 30762);
+    do_test(14, 0, 0);
 }
 #[test]
 fn day15() {
-    do_test(15, 6078701, 12567351400528u64);
+    do_test(15, 0, 0);
 }
 #[test]
 fn day16() {
-    do_test(16, 2181, 2824);
+    do_test(16, 0, 0);
 }
 #[test]
 fn day17() {
-    do_test(17, 3098, 1525364431487u64);
+    do_test(17, 0, 0);
 }
 #[test]
 fn day18() {
-    do_test(18, 4288, 2494);
+    do_test(18, 0, 0);
 }
 #[test]
 fn day19() {
-    do_test(19, 1395, 2700);
+    do_test(19, 0, 0);
 }
 #[test]
 fn day20() {
-    do_test(20, 9866, 12374299815791u64);
+    do_test(20, 0, 0);
 }
 #[test]
 fn day21() {
-    do_test(21, 158731561459602u64, 3769668716709u64);
+    do_test(21, 0, 0);
 }
 #[test]
 fn day22() {
-    do_test(22, 13566, 11451);
+    do_test(22, 0, 0);
 }
 #[test]
 fn day23() {
-    do_test(23, 4162, 986);
+    do_test(23, 0, 0);
 }
 #[test]
 fn day24() {
-    do_test(24, 257, 828);
+    do_test(24, 0, 0);
 }
 #[test]
 fn day25() {
-    do_test(25, "20=2-02-0---02=22=21", "");
+    do_test(25, 0, 0);
 }

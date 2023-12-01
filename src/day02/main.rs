@@ -17,10 +17,10 @@ lazy_static! {
 }
 
 fn read_p2(line: &str) -> u32 {
-    let mut line = &line[..];
+    let mut line = line;
     let mut v = Vec::new();
     'next_digit: while let Some(c) = line.chars().next() {
-        if c.is_digit(10) {
+        if c.is_ascii_digit() {
             v.push(c.to_digit(10).unwrap());
             line = &line[1..];
         } else {
