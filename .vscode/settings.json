@@ -6,5 +6,9 @@
     // working around bug in rust-analyzer 0.2.408
     "rust-analyzer.diagnostics.disabled": [
         "macro-error"
-    ]
+    ],
+    "files.associations": {
+        "cstring": "c",
+        "cstdio": "c"
+    }
 }
