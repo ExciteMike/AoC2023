@@ -75,7 +75,7 @@ fn do_day_elixir(chosen_day: usize) -> String {
 #[cfg(test)]
 #[track_caller]
 fn do_test<T: std::fmt::Display, U: std::fmt::Display>(day: usize, p1: T, p2: U) {
-    let expected = format!("part 1: {}\npart 2: {}\n", p1, p2);
+    let expected = format!("{}\n{}\n", p1, p2);
     if std::path::Path::new(&format!("src/day{:02}/main.rs", day)).exists() {
         println!("Testing Rust solution");
         assert_eq!(

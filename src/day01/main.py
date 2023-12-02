@@ -24,5 +24,5 @@ def p2(line):
     return xs[0] * 10 + xs[-1]
 
 def main(input: str):
-    print(f'part 1: {sum(p1(line) for line in input.splitlines())}')
-    print(f'part 2: {sum(p2(line) for line in input.splitlines())}')
+    print(f'{sum(p1(line) for line in input.splitlines())}')
+    print(f'{sum(p2(line) for line in input.splitlines())}')
