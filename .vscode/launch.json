@@ -13,5 +13,15 @@
             "environment": [],
             "externalConsole": true
         },
+        {
+            "name": "gcc -- build and debug current file",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "cwd": "${workspaceFolder}",
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb",
+            "preLaunchTask": "gcc build current file"
+        }
     ]
 }

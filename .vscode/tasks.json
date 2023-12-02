@@ -130,6 +130,18 @@
                 "focus": true,
                 "clear": true
             }
+        },
+        {
+            "label": "gcc build current file",
+            "type": "shell",
+            "command": "gcc ${file} -o ${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "problemMatcher":"$gcc",
+            "group": "build",
+            "presentation": {
+                "panel": "shared",
+                "focus": true,
+                "clear": true
+            }
         }
     ]
 }
