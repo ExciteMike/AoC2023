@@ -1,57 +1,42 @@
-use itertools::Itertools;
-use lazy_static::lazy_static;
+use regex::Regex;
 use shared::puzzle_input;
 
-lazy_static! {
-    static ref PARSE_TABLE: Vec<(&'static str, u32)> = vec![
-        ("one", 1),
-        ("two", 2),
-        ("three", 3),
-        ("four", 4),
-        ("five", 5),
-        ("six", 6),
-        ("seven", 7),
-        ("eight", 8),
-        ("nine", 9),
-    ];
+fn color_max(rounds: &str, color_name: &str) -> usize {
+    let re = Regex::new(&format!(r"(\d+) {color_name}")).unwrap();
+    rounds
+        .split(';')
+        .flat_map(|s| re.captures(s))
+        .map(|caps| caps.get(1).unwrap().as_str().parse().unwrap())
+        .max()
+        .unwrap_or(0)
 }
 
-fn read_p2(line: &str) -> u32 {
-    let mut line = line;
-    let mut v = Vec::new();
-    'next_digit: while let Some(c) = line.chars().next() {
-        if c.is_ascii_digit() {
-            v.push(c.to_digit(10).unwrap());
-            line = &line[1..];
-        } else {
-            for (s, value) in &*PARSE_TABLE {
-                if line.starts_with(s) {
-                    v.push(*value);
-                    line = &line[(s.len())..];
-                    continue 'next_digit;
-                }
-            }
-            line = &line[1..];
-            continue 'next_digit;
-        }
+fn p1(line: &str) -> Option<usize> {
+    let re = Regex::new(r"Game (\d+): (((\d+) (\w+))([^\d]*(\d+) (\w+))*)").ok()?;
+    let caps = re.captures(line)?;
+    let game_id: usize = caps.get(1)?.as_str().parse().ok()?;
+    let rounds = caps.get(2)?.as_str();
+    if color_max(rounds, "red") > 12 {
+        return None;
     }
-    v.first().unwrap() * 10 + v.last().unwrap()
+    if color_max(rounds, "green") > 13 {
+        return None;
+    }
+    if color_max(rounds, "blue") > 14 {
+        return None;
+    }
+    Some(game_id)
+}
+
+fn p2(line: &str) -> Option<usize> {
+    let re = Regex::new(r"[^:]: (((\d+) (\w+))([^\d]*(\d+) (\w+))*)").ok()?;
+    let caps = re.captures(line)?;
+    let rounds = caps.get(1)?.as_str();
+    Some(color_max(rounds, "red") * color_max(rounds, "green") * color_max(rounds, "blue"))
 }
 
 fn main() {
     let input = puzzle_input!();
-    let lines = input.split_ascii_whitespace();
-    let p1 = lines
-        .clone()
-        .map(|line| {
-            let mut i1 = line.chars().filter(|c| char::is_numeric(*c));
-            let mut i2 = i1.clone().rev();
-            let a = i1.next().unwrap_or('0').to_digit(10).unwrap();
-            let b = i2.next().unwrap_or('0').to_digit(10).unwrap();
-            a * 10 + b
-        })
-        .sum::<u32>();
-    let p2 = lines.map(read_p2).sum::<u32>();
-    println!("part 1: {p1}");
-    println!("part 2: {p2}");
+    println!("{}", input.split('\n').flat_map(p1).sum::<usize>());
+    println!("{}", input.split('\n').flat_map(p2).sum::<usize>());
 }

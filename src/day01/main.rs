@@ -26,7 +26,7 @@ fn read_p2(line: &str, parse_table: &[(usize, &'static str)]) -> usize {
             }
         }
     }
-    v[0] * 10 + v[v.len()-1]
+    v[0] * 10 + v[v.len() - 1]
 }
 
 fn main() {

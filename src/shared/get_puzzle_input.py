@@ -1,7 +1,7 @@
 def puzzle_input(day):
     import urllib.request
 
-    year = 2022
+    year = 2023
     fname = f"puzzle_input/day{day:02}"
     f = None
     try:

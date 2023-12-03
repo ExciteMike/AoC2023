@@ -4,7 +4,7 @@ use std::cmp::min;
 use std::process::Command;
 use std::{cmp::max, io::BufRead};
 
-const YEAR: usize = 2022;
+const YEAR: usize = 2023;
 
 fn main() -> std::io::Result<()> {
     let stdin = std::io::stdin();
@@ -110,7 +110,7 @@ fn day01() {
 }
 #[test]
 fn day02() {
-    do_test(2, 0, 0);
+    do_test(2, 2156, 66909);
 }
 #[test]
 fn day03() {

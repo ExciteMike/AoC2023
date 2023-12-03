@@ -1,4 +1,4 @@
--- ghc .\src\day01\hs\main.hs ; .\ssrc\day01\hs\main
+-- ghc .\src\day01\hs\main.hs ; .\src\day01\hs\main
 import Data.Char (digitToInt, isDigit)
 import Data.List (isPrefixOf)
 

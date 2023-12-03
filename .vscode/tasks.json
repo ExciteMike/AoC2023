@@ -71,7 +71,7 @@
             "args": [
                 "clean",
                 "--package",
-                "aoc2022"
+                "aoc2023"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -104,7 +104,7 @@
         {
             "label": "lint",
             "type": "shell",
-            "command": "cargo clean --package aoc2022 ; cargo clippy",
+            "command": "cargo clean --package aoc2023 ; cargo clippy",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -119,7 +119,7 @@
         {
             "label": "fmt+lint+test",
             "type": "shell",
-            "command": "cargo fmt --package aoc2022 ; cargo clean --package aoc2022 ; cargo clippy ; py src/runtests.py",
+            "command": "cargo fmt --package aoc2023 ; cargo clean --package aoc2023 ; cargo clippy ; py src/runtests.py",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
