@@ -118,7 +118,7 @@ fn day03() {
 }
 #[test]
 fn day04() {
-    do_test(4, 0, 0);
+    do_test(4, 33950, 14814534);
 }
 #[test]
 fn day05() {
