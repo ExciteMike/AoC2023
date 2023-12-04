@@ -1,6 +1,5 @@
 def check_card(line: str):
-    card, numbers = line.split(':')
-    card = int(card.split()[1])
+    _, numbers = line.split(':')
     winning_numbers, have_numbers = numbers.split('|')
     winning_numbers = set(int(x) for x in winning_numbers.split())
     have_numbers = set(int(x) for x in have_numbers.split())
