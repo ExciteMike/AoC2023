@@ -3,106 +3,90 @@ use std::collections::HashSet;
 use itertools::Itertools;
 use shared::puzzle_input;
 
-/// string starting with digits to the parsed number and it's length.
-/// EXAMPLE "123..." -> (123, 3)
-fn read_num(s: &str) -> (usize, usize) {
-    let mut value = 0usize;
-    for (n, c) in s.chars().enumerate() {
-        if let Some(digit) = c.to_digit(10) {
-            value = value * 10 + digit as usize;
-        } else {
-            return (value, n);
-        }
-    }
-    (value, s.len())
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+struct Number {
+    row: usize,
+    start: usize,
+    end: usize,
+    value: usize,
 }
 
-#[derive(Debug)]
-struct XYLenVal(usize, usize, usize, usize);
-
-fn neighbors(x: usize, y: usize, len: usize) -> Vec<(usize, usize)> {
-    let xmin = if x == 0 { x } else { x - 1 };
-    let ymin = if y == 0 { y } else { y - 1 };
-    (ymin..=(y + 1))
-        .flat_map(|y| (xmin..(x + len + 1)).map(move |x| (x, y)))
-        .collect_vec()
-}
-fn to_part_number(data: &HashSet<(usize, usize)>, xylenval: &XYLenVal) -> Option<usize> {
-    let &XYLenVal(x, y, len, val) = xylenval;
-    if neighbors(x, y, len).iter().any(|xy| data.contains(xy)) {
-        Some(val)
+fn p1_value(symbols: &HashSet<(usize, usize)>, n: &Number) -> usize {
+    let min_row = n.row.max(1) - 1;
+    let min_col = n.start.max(1) - 1;
+    if (min_row..(n.row + 2))
+        .cartesian_product(min_col..n.end + 1)
+        .any(|xy| symbols.contains(&xy))
+    {
+        n.value
     } else {
-        None
+        0
     }
 }
-fn neighbor_numbers(
-    numbers: &'_ [XYLenVal],
-    gear_x: usize,
-    gear_y: usize,
-) -> impl Iterator<Item = usize> + '_ {
-    numbers.iter().flat_map(move |XYLenVal(x, y, len, val)| {
-        let xmin = if *x == 0 { *x } else { *x - 1 };
-        let ymin = if *y == 0 { *y } else { *y - 1 };
-        if (xmin..(x + len + 1)).contains(&gear_x) && (ymin..(y + 2)).contains(&gear_y) {
-            Some(*val)
-        } else {
-            None
-        }
-    })
+
+fn p2_value(numbers: &[Number], (row, col): &(usize, usize)) -> usize {
+    let mut neighbor_parts = numbers.iter().filter(|n| {
+        (n.row..n.row + 3).contains(&(row + 1)) && (n.start..n.end + 2).contains(&(col + 1))
+    });
+    let a = neighbor_parts.next();
+    let b = neighbor_parts.next();
+    let c = neighbor_parts.next();
+    if let (Some(a), Some(b), None) = (a, b, c) {
+        a.value * b.value
+    } else {
+        0
+    }
 }
 
 fn main() {
     let input = puzzle_input!();
-    // let input = EXAMPLE;
-    let lines = input.split('\n').enumerate();
-    let numbers = lines
-        .clone()
-        .flat_map(|(y, line)| {
-            line.chars().enumerate().filter_map(move |(x, c)| {
-                let starts_a_number = c.is_ascii_digit()
-                    && ((x == 0) || !line.chars().nth(x - 1).unwrap().is_ascii_digit());
-                if starts_a_number {
-                    let (value, length) = read_num(&line[x..]);
-                    Some(XYLenVal(x, y, length, value))
-                } else {
-                    None
-                }
-            })
-        })
-        .collect_vec();
-    let symbols: HashSet<(usize, usize)> = lines
-        .clone()
-        .flat_map(|(y, line)| {
-            line.chars().enumerate().filter_map(move |(x, c)| {
-                if !c.is_ascii_digit() && (c != '.') {
-                    Some((x, y))
-                } else {
-                    None
-                }
-            })
-        })
-        .collect();
-
-    let p1 = numbers
-        .iter()
-        .filter_map(|xylenval| to_part_number(&symbols, xylenval))
-        .sum::<usize>();
-    let p2: usize = lines
-        .flat_map(|(y, line)| {
-            let numbers = &numbers;
-            line.chars().enumerate().filter_map(move |(x, c)| {
-                if c == '*' {
-                    let nn = neighbor_numbers(numbers, x, y).collect_vec();
-                    if nn.len() == 2 {
-                        Some(nn[0] * nn[1])
-                    } else {
-                        None
-                    }
-                } else {
-                    None
-                }
-            })
-        })
-        .sum();
+    let mut cur_number = None;
+    let mut numbers = Vec::new();
+    let mut gears = HashSet::<(usize, usize)>::new();
+    let mut symbols = HashSet::<(usize, usize)>::new();
+    let mut cur_row = 0usize;
+    let mut cur_col = 0usize;
+    for c in input.chars() {
+        if let Some(digit) = c.to_digit(10) {
+            cur_number = Some(cur_number.map_or_else(
+                || Number {
+                    row: cur_row,
+                    start: cur_col,
+                    end: cur_col + 1,
+                    value: digit as usize,
+                },
+                |n: Number| Number {
+                    end: n.end + 1,
+                    value: n.value * 10 + digit as usize,
+                    ..n
+                },
+            ));
+        } else if let Some(value) = cur_number {
+            numbers.push(value);
+            cur_number = None;
+        }
+        match c {
+            '.' => {}
+            '\n' => {
+                cur_row += 1;
+                cur_col = 0;
+                continue;
+            }
+            '*' => {
+                gears.insert((cur_row, cur_col));
+                symbols.insert((cur_row, cur_col));
+            }
+            _ if !c.is_ascii_digit() => {
+                symbols.insert((cur_row, cur_col));
+            }
+            _ => {}
+        }
+        cur_col += 1;
+    }
+    if let Some(value) = cur_number {
+        numbers.push(value);
+    }
+    let p1 = numbers.iter().map(|n| p1_value(&symbols, n)).sum::<usize>();
+    let p2 = gears.iter().map(|w| p2_value(&numbers, w)).sum::<usize>();
     println!("{p1}\n{p2}"); // 527369 73074886
 }
