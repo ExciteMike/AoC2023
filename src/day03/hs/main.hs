@@ -22,6 +22,7 @@ data Parts = Parts
 
 defaultParts = Parts {numbers = [], symbols = Set.empty, gears = Set.empty}
 
+-- internal parse function
 parse1 :: Parts -> Int64 -> Int64 -> String -> Parts
 parse1 parts _ _ "" = parts
 parse1 parts row col ('.' : rest) = parse1 parts row (col + 1) rest
@@ -41,6 +42,7 @@ parse1 parts row col (c : rest)
         parts' = parts {symbols = symbols'}
      in parse1 parts' row (col + 1) rest
 
+-- parse cases while we are in a number
 parseInNumber :: Parts -> Int64 -> Int64 -> PartNumber -> String -> Parts
 parseInNumber parts row col n "" =
   let numbers' = n : numbers parts
@@ -59,14 +61,11 @@ parseInNumber parts row col n (c : rest)
         parts' = parts {numbers = numbers'}
      in parse1 parts' row col (c : rest)
 
+-- parse input
 parse :: String -> Parts
 parse = parse1 defaultParts 0 0
 
-p1Filter :: Set (Int64, Int64) -> PartNumber -> Bool
-p1Filter symbols PartNumber {row = row, start = start, end = end, value = _} =
-  let locations = [(x, y) | x <- [start -1 .. end + 1], y <- [row -1 .. row + 1]]
-   in any (`member` symbols) locations
-
+-- value of a part number for part 1
 p1Value :: Set (Int64, Int64) -> PartNumber -> Int64
 p1Value symbols number =
   if any (`member` symbols) locations then value else 0
@@ -74,19 +73,19 @@ p1Value symbols number =
     PartNumber {row = row, start = start, end = end, value = value} = number
     locations = [(y, x) | x <- [start -1 .. end + 1], y <- [row -1 .. row + 1]]
 
+-- value of a gear for part 2
 p2Value :: [PartNumber] -> (Int64, Int64) -> Int64
 p2Value numbers (gearRow, gearCol) = v numbers'
   where
     numbers' = filter filterFunc numbers
     filterFunc PartNumber {row = row, start = start, end = end, value = _} =
-      (row-1 <= gearRow) && (gearRow <= row+1) && (start-1 <= gearCol) && (gearCol <= end+1)
+      (row -1 <= gearRow) && (gearRow <= row + 1) && (start -1 <= gearCol) && (gearCol <= end + 1)
     v [a, b] = value a * value b
     v _ = 0
 
 main :: IO ()
 main = do
   input <- readFile "puzzle_input/day03"
-  let parts = parse input
-  let Parts {numbers = numbers, symbols = symbols, gears = gears} = parts
+  let Parts {numbers = numbers, symbols = symbols, gears = gears} = parse input
   print $ sum $ map (p1Value symbols) numbers -- 527369
   print $ sum $ map (p2Value numbers) $ toList gears -- 73074886
