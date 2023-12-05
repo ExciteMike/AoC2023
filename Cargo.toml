@@ -28,10 +28,10 @@ path="src/day02/main.rs"
 name="day03"
 path="src/day03/main.rs"
 
-# [[bin]]
-# name="day04"
-# path="src/day04/main.rs"
-# 
+[[bin]]
+name="day04"
+path="src/day04/main.rs"
+
 # [[bin]]
 # name="day05"
 # path="src/day05/main.rs"
