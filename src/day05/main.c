@@ -1,13 +1,7 @@
+// $env:Path += ";path/to/gcc"
 // gcc -Wall -Wextra -std=c99 .\src\day05\main.c -I . -o .\target\day05.exe
 // then .\target\day05.exe
-#include <ctype.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
 #include "src/shared/lib.c"
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
 
 #define MAX_SEEDS (20)
 #define MAX_STEPS (7)
@@ -120,7 +114,7 @@ void map_seeds(
     }
 }
 
-int64_t p1(int64_t* seeds, size_t n_seeds, const ConversionStep* steps, size_t n_steps) {
+int64_t part1(int64_t* seeds, size_t n_seeds, const ConversionStep* steps, size_t n_steps) {
     if ((n_seeds <= 0)||(n_steps<=0)) { return 0; }
     if (n_seeds > MAX_SEEDS) { PANIC("insufficient space"); }
     int64_t buf[MAX_SEEDS] = { 0 };
@@ -190,27 +184,20 @@ size_t convert_range(
         if (lo < m->src) {
             // ..and ends within
             if (hi <= src_end) {
-printf("case @ line %i\n", __LINE__); abort();
-                RECURSE(lo, m->src - lo + 1);
+                RECURSE(lo, m->src - lo);
+                WRITE(m->dst, hi - m->src);
                 break;
             }
 
             // ...and extends beyond
-printf("case @ line %i\n", __LINE__); abort();
-            RECURSE(lo, m->src - lo + 1);
-            WRITE(m->dst, src_end + offset);
+            RECURSE(lo, m->src - lo);
+            WRITE(m->dst, m->range);
             RECURSE(src_end + 1, hi - src_end);
             break;
         }
 
         // overlaps into src range from above (and began within)
         if (hi > src_end) {
-printf("case @ line %i\n", __LINE__);
-printf("  input= %" PRIi64 ", %" PRIi64 "\n", range.start, range.range);
-printf("  mapping dst= %" PRIi64 ", src=%" PRIi64 ", range=%" PRIi64 "\n", m->dst, m->src, m->range);
-printf("  offset = %" PRIi64 "\n", offset);
-printf("  %" PRIi64 ", %" PRIi64 "\n", lo + offset, src_end - lo + 1);
-printf("  %" PRIi64 ", %" PRIi64 "\n", src_end + 1, hi - src_end);
             WRITE(lo + offset, src_end - lo + 1);
             RECURSE(src_end + 1, hi - src_end);
             break;
@@ -245,18 +232,9 @@ size_t convert_ranges(
     return n_written;
 }
 
-void print_ranges(const SeedRange *ranges, size_t n_ranges) {
-    printf("%" PRIu64 " ranges:\n", (uint64_t)n_ranges);
-    for (size_t i=0; i<n_ranges; ++i) {
-        printf("  %" PRIi64 " %" PRIi64 "\n",
-               (ranges + i)->start,
-               (ranges + i)->range);
-    }
-}
-
-int64_t p2(const SeedRange *ranges, size_t n_ranges, const ConversionStep* steps, size_t n_steps) {
+int64_t part2(const SeedRange *ranges, size_t n_ranges, const ConversionStep* steps, size_t n_steps) {
     if ((n_ranges <= 0)||(n_steps <= 0)) { return 0; }
-    #define BUF_SIZE (4)
+    #define BUF_SIZE (128)
     if (n_ranges > BUF_SIZE) { PANIC("insufficient space"); }
     SeedRange buf_a[BUF_SIZE] = {0};
     memcpy(buf_a, ranges, n_ranges * sizeof(ranges[0]));
@@ -264,14 +242,12 @@ int64_t p2(const SeedRange *ranges, size_t n_ranges, const ConversionStep* steps
     SeedRange *read_buf = buf_a;
     SeedRange *write_buf = buf_b;
     size_t n_written = n_ranges;
-    print_ranges(read_buf, n_written);
     for (size_t i=0; i<n_steps; ++i) {
         const ConversionStep *step = steps + i;
         size_t n_mappings = step->n;
         const Mapping *mappings = step->ms;
         n_written = convert_ranges(mappings, n_mappings, read_buf, n_written, write_buf, BUF_SIZE);
         SWAP(read_buf, write_buf, SeedRange*)
-print_ranges(read_buf, n_written);
     }
 
     int64_t min = read_buf->start;
@@ -285,15 +261,14 @@ print_ranges(read_buf, n_written);
 }
 
 int main() {
-    FILE *f = fopen("./puzzle_input/day05example", "r");
+    FILE *f = fopen("./puzzle_input/day05", "r");
     ASSERT(f != NULL, "Error opening input");
     int64_t seeds[MAX_SEEDS] = {0};
     size_t n_seeds = read_seeds(f, seeds, MAX_SEEDS);
     ConversionStep conversion_steps[MAX_STEPS] = {0};
     size_t n_steps = read_conversion_steps(f, conversion_steps, MAX_STEPS);
-    printf("%" PRIu64 "\n", p1(seeds, n_seeds, conversion_steps, n_steps)); // 525792406
-    SeedRange *ranges = (SeedRange*)seeds;
-    size_t n_ranges = n_seeds >> 1;
-    printf("%" PRIu64 "\n", p2(ranges, n_ranges, conversion_steps, n_steps)); // 79004094
+    int64_t p1 = part1(seeds, n_seeds, conversion_steps, n_steps);
+    int64_t p2 = part2((SeedRange*)seeds, n_seeds >> 1, conversion_steps, n_steps);
+    printf("%" PRIi64 "\n%" PRIi64, p1, p2); // 525792406 79004094
     return 0;
 }

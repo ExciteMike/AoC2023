@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
 
 #define DEF_VEC(NAME, T)                                              \
     typedef struct {                                                  \
@@ -49,7 +51,7 @@
         abort();                                            \
     }
 #define ASSERT(cond, s) {                                       \
-        if (!(cond)) {                                            \
+        if (!(cond)) {                                          \
             fprintf(stderr, s ": %s:%d\n", __FILE__, __LINE__); \
             abort();                                            \
         }                                                       \
@@ -86,29 +88,4 @@ void skip_until(FILE *f, char end_c) {
 }
 void skip_word(FILE *f) { skip_pred(f, isalnum); }
 void skip_punct(FILE *f) { skip_pred(f, ispunct); }
-void skip_space(FILE *f) { skip_pred(f, isspace); }
 void skip_to_eol(FILE *f) { skip_until(f, '\n'); }
-int64_t read_i64(FILE *f) {
-    int is_neg = 0;
-    int64_t value = 0;
-    char c;
-    if ((c = getc(f))) {
-        if (c == '-') {
-            is_neg = 1;
-        } else {
-            ungetc(c, f);
-            value = c - 0x30;
-        }
-    } else {
-        assert(0);
-    }
-    while ((c = getc(f))) {
-        if (isdigit(c)) {
-            value = value * 10 + c - 0x30;
-        } else {
-            ungetc(c, f);
-            break;
-        }
-    }
-    return is_neg ? -value : value;
-}
