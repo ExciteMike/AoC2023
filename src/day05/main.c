@@ -19,25 +19,8 @@ typedef struct ConversionStep {
 } ConversionStep;
 
 size_t read_seeds(FILE *f, int64_t *buf, size_t n) {
-    size_t i = 0;
     fscanf(f, "seeds: ");
-    while (1) {
-        int64_t temp;
-        switch (fscanf(f, " %" SCNi64 " ", &temp)) {
-        case 0:
-        case EOF:
-            return i;
-        case 1:
-            if (i >= n) {
-                PANIC("insufficient space");
-            }
-            *(buf + (i++)) = temp;
-            break;
-        default:
-            assert(!"unhandled case");
-        }
-    }
-    return i;
+    return read_i64s(f, buf, n);
 }
 
 size_t read_conversion_step(FILE *f, ConversionStep *dst, size_t max_steps) {
@@ -76,8 +59,7 @@ size_t read_conversion_steps(FILE *f, ConversionStep *buf, size_t n) {
         case EOF:
             return i;
         case 1:
-            if (i >= n)
-            {
+            if (i >= n) {
                 PANIC("insufficient space");
             }
             *(buf + (i++)) = temp;
@@ -269,6 +251,6 @@ int main() {
     size_t n_steps = read_conversion_steps(f, conversion_steps, MAX_STEPS);
     int64_t p1 = part1(seeds, n_seeds, conversion_steps, n_steps);
     int64_t p2 = part2((SeedRange*)seeds, n_seeds >> 1, conversion_steps, n_steps);
-    printf("%" PRIi64 "\n%" PRIi64, p1, p2); // 525792406 79004094
+    printf("%" PRIi64 "\n%" PRIi64 "\n", p1, p2); // 525792406 79004094
     return 0;
 }

@@ -89,3 +89,29 @@ void skip_until(FILE *f, char end_c) {
 void skip_word(FILE *f) { skip_pred(f, isalnum); }
 void skip_punct(FILE *f) { skip_pred(f, ispunct); }
 void skip_to_eol(FILE *f) { skip_until(f, '\n'); }
+
+/// @brief read whitespace-delimited 64-bit ints
+/// @param f file to read from
+/// @param buf where to store them
+/// @param n how many can be stored in buf
+/// @return how many were read
+size_t read_i64s(FILE *f, int64_t *buf, size_t n) {
+    size_t i = 0;
+    while (1) {
+        int64_t temp;
+        switch (fscanf(f, " %" SCNi64 " ", &temp)) {
+        case 0:
+        case EOF:
+            return i;
+        case 1:
+            if (i >= n) {
+                PANIC("insufficient space");
+            }
+            *(buf + (i++)) = temp;
+            break;
+        default:
+            assert(!"unhandled case");
+        }
+    }
+    return i;
+}
