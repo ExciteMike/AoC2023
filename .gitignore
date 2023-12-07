@@ -3,5 +3,5 @@ target
 session_cookie
 main.o
 main.hi
-main.exe
+*.exe
 __pycache__
