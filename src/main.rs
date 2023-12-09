@@ -122,23 +122,23 @@ fn day04() {
 }
 #[test]
 fn day05() {
-    do_test(5, 0, 0);
+    do_test(5, 525792406, 79004094);
 }
 #[test]
 fn day06() {
-    do_test(6, 0, 0);
+    do_test(6, 252000, 36992486);
 }
 #[test]
 fn day07() {
-    do_test(7, 0, 0);
+    do_test(7, 253866470, 254494947);
 }
 #[test]
 fn day08() {
-    do_test(8, 0, 0);
+    do_test(8, 16343, 15299095336639i64);
 }
 #[test]
 fn day09() {
-    do_test(9, 0, 0);
+    do_test(9, 1884768153, 1031);
 }
 #[test]
 fn day10() {
