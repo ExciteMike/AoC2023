@@ -23,8 +23,6 @@ def p1(steps, instructions, data, starts, end_pred):
     ghosts = starts
     instructions = cycle(enumerate(instructions))
     for i, direction in instructions:
-        if steps%10000 == 0 and i==0:
-            print(steps, ghosts, [end_pred(g) for g in ghosts])
         if all(end_pred(g) for g in ghosts):
             break
         ghosts = set(data[g][direction] for g in ghosts)

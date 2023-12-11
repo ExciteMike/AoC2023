@@ -102,17 +102,17 @@ def main(puzzle_input: str):
             case c:
                 raise RuntimeError(f'unhandled "{c}"')
 
-    # test(distances, pipes, (13,5))
-    for y in range(141):
-        for x in range(141):
-            xy = (x, y)
-            if xy in distances:
-                print(pipes[xy], end='')
-            elif test(distances, pipes, xy):
-                print('x', end='')
-            else:
-                print(' ', end='')
-        print()
+    if False:
+        for y in range(141):
+            for x in range(141):
+                xy = (x, y)
+                if xy in distances:
+                    print(pipes[xy], end='')
+                elif test(distances, pipes, xy):
+                    print('x', end='')
+                else:
+                    print(' ', end='')
+            print()
 
     print(max(distances.values()))  # 6907
     print(sum(1 for xy in pipes
