@@ -5,3 +5,6 @@ main.o
 main.hi
 *.exe
 __pycache__
+zig-cache
+zig-out
+*.zon

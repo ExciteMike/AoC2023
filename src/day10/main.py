@@ -115,5 +115,5 @@ def main(puzzle_input: str):
         print()
 
     print(max(distances.values()))  # 6907
-    print(sum(1 for xy in pipes if test(
-        distances, pipes, xy) % 2 == 1))  # 541
+    print(sum(1 for xy in pipes
+              if test(distances, pipes, xy)))  # 541
