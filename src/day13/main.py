@@ -44,11 +44,11 @@ class Pattern:
 
     def summarize(self):
         v = self.find_v_reflection_line()
-        return v if v else 100 * self.find_h_reflection_line()
+        return v or 100 * self.find_h_reflection_line()
 
     def summarize2(self):
         v = self.find_v_reflection_line2()
-        return v if v else 100 * self.find_h_reflection_line2()
+        return v or 100 * self.find_h_reflection_line2()
 
 
 def parse(pattern):
