@@ -13,5 +13,6 @@
         "stdio.h": "c",
         "ctype.h": "c",
         "assert.h": "c"
-    }
+    },
+    "dotnet.defaultSolution": ".\\src\\cs\\AoC.sln"
 }
