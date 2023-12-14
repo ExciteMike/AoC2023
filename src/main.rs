@@ -13,7 +13,7 @@ fn main() -> std::io::Result<()> {
     let start_of_month = NaiveDate::parse_from_str(&format!("{}-12-01", YEAR), "%Y-%m-%d").unwrap();
     let default_day = max(
         0,
-        min(25, now.signed_duration_since(start_of_month).num_days()),
+        min(25, now.signed_duration_since(start_of_month).num_days() + 1),
     );
     println!(
         "Enter a day number (1-25) or just press enter for default ({})",
