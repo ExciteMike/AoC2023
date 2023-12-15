@@ -14,5 +14,6 @@
         "ctype.h": "c",
         "assert.h": "c"
     },
-    "dotnet.defaultSolution": ".\\src\\cs\\AoC.sln"
+    "dotnet.defaultSolution": ".\\src\\cs\\AoC.sln",
+    "cmake.configureOnOpen": false
 }
