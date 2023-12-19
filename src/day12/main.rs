@@ -64,7 +64,7 @@ fn count_ways_<'a>(
             1
         } else if group_in_progress >= gs[0] {
             p!("  B");
-            count_ways(memo, s, &gs[1..], 0)            
+            count_ways(memo, s, &gs[1..], 0)
         } else {
             p!("C: 0");
             0
@@ -101,7 +101,7 @@ fn count_ways_<'a>(
                 } else {
                     // continue group
                     p!("I");
-                    count_ways(memo, &s[1..], gs, group_in_progress+1)
+                    count_ways(memo, &s[1..], gs, group_in_progress + 1)
                 }
             } else {
                 p!("J");
@@ -125,7 +125,10 @@ fn solution() {
         .iter()
         .map(|(s, gs)| count_ways(&mut memo, s, gs, 0))
         .sum::<i64>();
-    let p2 = lines.iter().map(|(s, gs)|count_ways(&mut memo, &unfold_s(s), &unfold_gs(gs), 0)).sum::<i64>();
+    let p2 = lines
+        .iter()
+        .map(|(s, gs)| count_ways(&mut memo, &unfold_s(s), &unfold_gs(gs), 0))
+        .sum::<i64>();
     println!("{p1}\n{p2}"); // 7260 1909291258644
 }
 
@@ -143,10 +146,16 @@ fn main() {
 #[test]
 fn a() {
     let mut memo: HashMap<(String, Vec<i64>, i64), i64> = HashMap::with_capacity(1024);
-    assert_eq!(count_ways(&mut memo, "#.#.###", &[1,1,3], 0), 1);
-    assert_eq!(count_ways(&mut memo, ".??..??...?##.", &[1,1,3], 0), 4);
-    assert_eq!(count_ways(&mut memo, "?#?#?#?#?#?#?#?", &[1,3,1,6], 0), 1);
-    assert_eq!(count_ways(&mut memo, "????.#...#...", &[4,1,1], 0), 1);
-    assert_eq!(count_ways(&mut memo, "????.######..#####.", &[1,6,5], 0), 4);
-    assert_eq!(count_ways(&mut memo, "?###????????", &[3,2,1], 0), 10);
+    assert_eq!(count_ways(&mut memo, "#.#.###", &[1, 1, 3], 0), 1);
+    assert_eq!(count_ways(&mut memo, ".??..??...?##.", &[1, 1, 3], 0), 4);
+    assert_eq!(
+        count_ways(&mut memo, "?#?#?#?#?#?#?#?", &[1, 3, 1, 6], 0),
+        1
+    );
+    assert_eq!(count_ways(&mut memo, "????.#...#...", &[4, 1, 1], 0), 1);
+    assert_eq!(
+        count_ways(&mut memo, "????.######..#####.", &[1, 6, 5], 0),
+        4
+    );
+    assert_eq!(count_ways(&mut memo, "?###????????", &[3, 2, 1], 0), 10);
 }

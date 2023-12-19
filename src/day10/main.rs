@@ -4,32 +4,54 @@ use itertools::Itertools;
 use shared::puzzle_input;
 
 trait Coord {
-    fn n(&self) -> Option<Self> where Self: Sized;
-    fn s(&self) -> Option<Self> where Self: Sized;
-    fn e(&self) -> Option<Self> where Self: Sized;
-    fn w(&self) -> Option<Self> where Self: Sized;
+    fn n(&self) -> Option<Self>
+    where
+        Self: Sized;
+    fn s(&self) -> Option<Self>
+    where
+        Self: Sized;
+    fn e(&self) -> Option<Self>
+    where
+        Self: Sized;
+    fn w(&self) -> Option<Self>
+    where
+        Self: Sized;
 }
 impl Coord for (u8, u8) {
-    fn n(&self) -> Option<Self> where Self: Sized {
+    fn n(&self) -> Option<Self>
+    where
+        Self: Sized,
+    {
         (self.1 > 0).then_some((self.0, self.1.wrapping_sub(1)))
     }
 
-    fn s(&self) -> Option<Self> where Self: Sized {
+    fn s(&self) -> Option<Self>
+    where
+        Self: Sized,
+    {
         Some((self.0, self.1 + 1))
     }
 
-    fn e(&self) -> Option<Self> where Self: Sized {
+    fn e(&self) -> Option<Self>
+    where
+        Self: Sized,
+    {
         Some((self.0 + 1, self.1))
     }
 
-    fn w(&self) -> Option<Self> where Self: Sized {
+    fn w(&self) -> Option<Self>
+    where
+        Self: Sized,
+    {
         (self.0 > 0).then_some((self.0.wrapping_sub(1), self.1))
     }
 }
 
 fn p2(ds: &HashMap<(u8, u8), u32>, pipes: &HashMap<(u8, u8), char>) -> usize {
-    (0..140u8).cartesian_product(0..140u8).filter(|p|
-        test_inside(ds, pipes, *p)).count()
+    (0..140u8)
+        .cartesian_product(0..140u8)
+        .filter(|p| test_inside(ds, pipes, *p))
+        .count()
 }
 
 fn test_inside(ds: &HashMap<(u8, u8), u32>, pipes: &HashMap<(u8, u8), char>, p: (u8, u8)) -> bool {
@@ -38,12 +60,12 @@ fn test_inside(ds: &HashMap<(u8, u8), u32>, pipes: &HashMap<(u8, u8), char>, p: 
     }
     let mut is_inside = false;
     let mut began_wall_with = '.';
-    // walk 
+    // walk
     for x in 0..p.0 {
         let q = (x, p.1);
         if ds.contains_key(&q) {
             match pipes.get(&q) {
-                Some(pipe@('F' | 'L')) => {
+                Some(pipe @ ('F' | 'L')) => {
                     began_wall_with = *pipe;
                 }
                 Some('|') => {
@@ -65,8 +87,8 @@ fn test_inside(ds: &HashMap<(u8, u8), u32>, pipes: &HashMap<(u8, u8), char>, p: 
     is_inside
 }
 
-fn read_pipes(s: &str, s_is: char) -> (HashMap<(u8,u8), char>, (u8, u8)) {
-    const CAP:usize = 20_000;
+fn read_pipes(s: &str, s_is: char) -> (HashMap<(u8, u8), char>, (u8, u8)) {
+    const CAP: usize = 20_000;
     let mut m = HashMap::with_capacity(CAP);
     let mut start = (0, 0);
     for (y, line) in s.split_whitespace().enumerate() {
@@ -78,24 +100,26 @@ fn read_pipes(s: &str, s_is: char) -> (HashMap<(u8,u8), char>, (u8, u8)) {
                 }
                 'F' | '-' | '7' | '|' | 'J' | 'L' => {
                     m.insert((x as u8, y as u8), c);
-                },
-                _ => {},
+                }
+                _ => {}
             }
         }
     }
-    assert!(m.capacity() <= 2*CAP);
+    assert!(m.capacity() <= 2 * CAP);
     (m, start)
 }
 
-fn dijkstra_map(pipes: &HashMap<(u8,u8), char>, start: (u8, u8)) -> (HashMap<(u8,u8), u32>, u32) {
-    const DM_CAP:usize = 10_000;
-    const Q_CAP:usize = 1_000;
+fn dijkstra_map(pipes: &HashMap<(u8, u8), char>, start: (u8, u8)) -> (HashMap<(u8, u8), u32>, u32) {
+    const DM_CAP: usize = 10_000;
+    const Q_CAP: usize = 1_000;
     let mut dm = HashMap::with_capacity(DM_CAP);
     let mut queue = VecDeque::with_capacity(Q_CAP);
     let mut worst = 0;
     queue.push_back((start, 0u32));
     loop {
-        let Some( ( p, distance) ) = queue.pop_front() else { break; };
+        let Some((p, distance)) = queue.pop_front() else {
+            break;
+        };
         if dm.contains_key(&p) {
             continue;
         }
@@ -110,12 +134,12 @@ fn dijkstra_map(pipes: &HashMap<(u8,u8), char>, start: (u8, u8)) -> (HashMap<(u8
             'J' => [p.n(), p.w()],
             '7' => [p.w(), p.s()],
             'F' => [p.e(), p.s()],
-            _ => unreachable!()
+            _ => unreachable!(),
         };
-        queue.extend(ps.iter().flatten().map(|p|(*p, distance+1)));
+        queue.extend(ps.iter().flatten().map(|p| (*p, distance + 1)));
     }
-    assert!(queue.capacity() <= 2*Q_CAP);
-    assert!(dm.capacity() <= 2*DM_CAP);
+    assert!(queue.capacity() <= 2 * Q_CAP);
+    assert!(dm.capacity() <= 2 * DM_CAP);
     (dm, worst)
 }
 
@@ -165,17 +189,20 @@ fn p2test() {
         for x in 0..20 {
             let p = (x, y);
             if test_inside(&dm, &pipes, p) {
-                print!("x");   
+                print!("x");
             } else if dm.contains_key(&p) {
-                print!("{}", match pipes.get(&p).unwrap() {
-                    'F' => '┏',
-                    '-' => '━',
-                    '7' => '┓',
-                    '|' => '┃',
-                    'J' => '┛',
-                    'L' => '┗',
-                    _ => panic!()
-                });
+                print!(
+                    "{}",
+                    match pipes.get(&p).unwrap() {
+                        'F' => '┏',
+                        '-' => '━',
+                        '7' => '┓',
+                        '|' => '┃',
+                        'J' => '┛',
+                        'L' => '┗',
+                        _ => panic!(),
+                    }
+                );
             } else {
                 print!(" ");
             }
