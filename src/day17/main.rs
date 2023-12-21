@@ -127,7 +127,7 @@ struct Moves {
     up: bool,
     down: bool,
     left: bool,
-    right: bool
+    right: bool,
 }
 
 fn move_rules_p1(state: &State) -> Moves {
@@ -136,31 +136,31 @@ fn move_rules_p1(state: &State) -> Moves {
     Moves {
         up: (state.dir != Dir::D) && ((state.dir != Dir::U) || straight_ok),
         down: (state.dir != Dir::U) && ((state.dir != Dir::D) || straight_ok),
-        left: (state.dir != Dir::R) && ((state.dir != Dir::L) || straight_ok) ,
+        left: (state.dir != Dir::R) && ((state.dir != Dir::L) || straight_ok),
         right: (state.dir != Dir::L) && ((state.dir != Dir::R) || straight_ok),
     }
 }
 
 fn move_rules_p2(state: &State) -> Moves {
-let straight_ok = state.streak < 10;
+    let straight_ok = state.streak < 10;
     let turn_ok = state.streak >= 4;
     Moves {
         up: (state.dir == Dir::None)
-        || ((state.dir == Dir::U) && straight_ok)
-        || ((state.dir == Dir::L) && turn_ok)
-        || ((state.dir == Dir::R) && turn_ok),
+            || ((state.dir == Dir::U) && straight_ok)
+            || ((state.dir == Dir::L) && turn_ok)
+            || ((state.dir == Dir::R) && turn_ok),
         down: (state.dir == Dir::None)
-        || ((state.dir == Dir::D) && straight_ok)
-        || ((state.dir == Dir::L) && turn_ok)
-        || ((state.dir == Dir::R) && turn_ok),
-        left:   (state.dir == Dir::None)
-        ||     ((state.dir == Dir::L) && straight_ok)
-        ||     ((state.dir == Dir::U) && turn_ok)
-        ||     ((state.dir == Dir::D) && turn_ok),
-        right:  (state.dir == Dir::None)
-        ||     ((state.dir == Dir::R) && straight_ok)
-        ||     ((state.dir == Dir::U) && turn_ok)
-        ||     ((state.dir == Dir::D) && turn_ok)
+            || ((state.dir == Dir::D) && straight_ok)
+            || ((state.dir == Dir::L) && turn_ok)
+            || ((state.dir == Dir::R) && turn_ok),
+        left: (state.dir == Dir::None)
+            || ((state.dir == Dir::L) && straight_ok)
+            || ((state.dir == Dir::U) && turn_ok)
+            || ((state.dir == Dir::D) && turn_ok),
+        right: (state.dir == Dir::None)
+            || ((state.dir == Dir::R) && straight_ok)
+            || ((state.dir == Dir::U) && turn_ok)
+            || ((state.dir == Dir::D) && turn_ok),
     }
 }
 
@@ -185,7 +185,6 @@ fn main() {
     let elapsed = now.elapsed();
     eprintln!("Completed in average of {:.2?}", elapsed / N_TIMES);
 }
-
 
 #[cfg(test)]
 const EXAMPLE: &str = r"2413432311323

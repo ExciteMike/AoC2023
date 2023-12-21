@@ -36,25 +36,25 @@ where
         match dir {
             'U' => {
                 for _ in 0..amnt {
-                    trenches.insert(p.clone());
+                    trenches.insert(p);
                     p = (p.0, p.1 - 1);
                 }
             }
             'D' => {
                 for _ in 0..amnt {
-                    trenches.insert(p.clone());
+                    trenches.insert(p);
                     p = (p.0, p.1 + 1);
                 }
             }
             'L' => {
                 for _ in 0..amnt {
-                    trenches.insert(p.clone());
+                    trenches.insert(p);
                     p = (p.0 - 1, p.1);
                 }
             }
             'R' => {
                 for _ in 0..amnt {
-                    trenches.insert(p.clone());
+                    trenches.insert(p);
                     p = (p.0 + 1, p.1);
                 }
             }
@@ -130,7 +130,7 @@ fn fill(m: &mut HashSet<(isize, isize)>) {
 
 fn score(v: &[(char, isize)]) -> isize {
     let mut total = 0;
-    let coords = to_coords(&v);
+    let coords = to_coords(v);
     println!("{coords:?}");
     let ys = ys_by_x(&coords);
     let mut cur_ys = Vec::<isize>::new();
@@ -169,7 +169,7 @@ fn score(v: &[(char, isize)]) -> isize {
 }
 
 fn p1(input: &str) -> Option<usize> {
-    let mut trenches = dig(&input, parse_line)?;
+    let mut trenches = dig(input, parse_line)?;
     fill(&mut trenches);
     Some(trenches.len())
 }
@@ -210,10 +210,7 @@ U 2 (#7a21e3)
 
 #[test]
 fn p1test() {
-    let v = EXAMPLE
-        .split('\n')
-        .filter_map(|line| parse_line(line))
-        .collect_vec();
+    let v = EXAMPLE.split('\n').filter_map(parse_line).collect_vec();
     assert_eq!(score(&v), 62);
 }
 
@@ -239,10 +236,7 @@ fn dump(m: &HashSet<(isize, isize)>) {
 
 #[test]
 fn p2test() {
-    let v = EXAMPLE
-        .split('\n')
-        .filter_map(|line| parse_line2(line))
-        .collect_vec();
+    let v = EXAMPLE.split('\n').filter_map(parse_line2).collect_vec();
     assert_eq!(
         &v,
         &[

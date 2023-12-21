@@ -60,7 +60,7 @@ fn parse_workflow(s: &str) -> (&str, Box<[Rule]>) {
     (name, rules)
 }
 
-fn replace<'a, 'b>(m: &'a mut Map<'b>, old_name: &'b str, new_name: &'b str) {
+fn replace<'a>(m: &mut Map<'a>, old_name: &'a str, new_name: &'a str) {
     for rules in m.values_mut() {
         for rule in &mut **rules {
             if rule.dst_wf == old_name {
@@ -76,22 +76,22 @@ fn parse_workflows(s: &str) -> Map {
     // simplify workflows
     let mut did_anything = true;
     while did_anything {
-       did_anything = false;
-       let to_remove = m
-           .iter()
-           .filter_map(|(name, rules)| {
-               rules
-                   .iter()
-                   .map(|rule| rule.dst_wf)
-                   .all_equal()
-                   .then_some((*name, rules[0].dst_wf))
-           })
-           .collect_vec();
-       for (discard, keep) in to_remove {
-           did_anything = true;
-           replace(&mut m, discard, keep);
-           m.remove(discard);
-       }
+        did_anything = false;
+        let to_remove = m
+            .iter()
+            .filter_map(|(name, rules)| {
+                rules
+                    .iter()
+                    .map(|rule| rule.dst_wf)
+                    .all_equal()
+                    .then_some((*name, rules[0].dst_wf))
+            })
+            .collect_vec();
+        for (discard, keep) in to_remove {
+            did_anything = true;
+            replace(&mut m, discard, keep);
+            m.remove(discard);
+        }
     }
     m
 }
@@ -141,10 +141,10 @@ fn test_part(m: &Map, p: &Part) -> u32 {
             }
         }
     }
-    return 0;
+    0
 }
 
-fn p2<'a>(m: &'a Map) -> usize {
+fn p2(m: &Map) -> usize {
     let mut xv = HashSet::from([1, 4001]);
     let mut mv = HashSet::from([1, 4001]);
     let mut av = HashSet::from([1, 4001]);
@@ -153,13 +153,21 @@ fn p2<'a>(m: &'a Map) -> usize {
         for rule in &**rules {
             let amnt = match rule.ordering {
                 Ordering::Less => rule.amount,
-                _ => rule.amount + 1
+                _ => rule.amount + 1,
             };
             match rule.category {
-                'x' => {xv.insert(amnt);},
-                'm' => {mv.insert(amnt);},
-                'a' => {av.insert(amnt);},
-                's' => {sv.insert(amnt);},
+                'x' => {
+                    xv.insert(amnt);
+                }
+                'm' => {
+                    mv.insert(amnt);
+                }
+                'a' => {
+                    av.insert(amnt);
+                }
+                's' => {
+                    sv.insert(amnt);
+                }
                 _ => unreachable!(),
             }
         }
@@ -174,12 +182,15 @@ fn p2<'a>(m: &'a Map) -> usize {
             for (a1, a2) in av.iter().tuple_windows() {
                 for (s1, s2) in sv.iter().tuple_windows() {
                     if 0 < test_part(m, &(*x1, *m1, *a1, *s1)) {
-                        total += (x2-x1) as usize * (m2-m1) as usize * (a2-a1) as usize * (s2-s1) as usize;
+                        total += (x2 - x1) as usize
+                            * (m2 - m1) as usize
+                            * (a2 - a1) as usize
+                            * (s2 - s1) as usize;
                     }
                 }
             }
         }
-        eprintln!("{:5.1}%", ((i+1) as f64) / (xv.len() as f64) * 100f64)
+        eprintln!("{:5.1}%", ((i + 1) as f64) / (xv.len() as f64) * 100f64)
     }
     total
 }
@@ -187,7 +198,7 @@ fn p2<'a>(m: &'a Map) -> usize {
 fn solution() {
     let input = puzzle_input!();
     let (m, parts) = parse(&input);
-    let p1 = parts.iter().map(|part| test_part(&m, &part)).sum::<u32>();
+    let p1 = parts.iter().map(|part| test_part(&m, part)).sum::<u32>();
     println!("{p1}\n{}", p2(&m)); // 353046 125355665599537
 }
 
@@ -227,7 +238,7 @@ hdj{m>838:A,pv}
 fn p1_example() {
     let (m, parts) = parse(EXAMPLE);
     assert_eq!(
-        parts.iter().map(|part| test_part(&m, &part)).sum::<u32>(),
+        parts.iter().map(|part| test_part(&m, part)).sum::<u32>(),
         19114
     );
 }
@@ -236,15 +247,17 @@ fn p1_test() {
     let input = puzzle_input!();
     let (m, parts) = parse(&input);
     assert_eq!(
-        parts.iter().map(|part| test_part(&m, &part)).sum::<u32>(),
+        parts.iter().map(|part| test_part(&m, part)).sum::<u32>(),
         353046
     );
 }
 
-
 #[test]
 fn p2_example() {
-    assert_eq!(p2(&parse("in{x<101:foo,R}\nfoo{m>3001:R,A}\n\n{x=1,m=1,a=1,s=1}").0), 100usize * 4000 * 4000 * 3001);
+    assert_eq!(
+        p2(&parse("in{x<101:foo,R}\nfoo{m>3001:R,A}\n\n{x=1,m=1,a=1,s=1}").0),
+        100usize * 4000 * 4000 * 3001
+    );
 
     const TEST0: &str = r"in{a<2000:foo,A}\n\
     foo{x>1111:bar,s<99:baz,R}\n\
