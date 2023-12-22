@@ -32,7 +32,7 @@ fn parse(input: &str) -> ParseResult {
     let h = 1 + input.trim_end().chars().filter(|c| *c == '\n').count() as u8;
     let data = input
         .chars()
-        .filter_map(|c| c.is_ascii_digit().then_some(c))
+        .filter(|c| c.is_ascii_digit())
         .filter_map(|c| c.to_digit(10))
         .map(|v| v as usize)
         .collect_vec()
