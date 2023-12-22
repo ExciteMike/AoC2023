@@ -109,13 +109,13 @@ fn solution() {
     let m = track_visits(&garden, 64, false);
     let p1 = m.values().filter(|&&steps| steps % 2 == 0).count();
     println!("{p1}"); // 3642
-    
+
     // once you catch that if you limit it to steps of 2*size, it must follow a
     // quadratic curve, you can take some samples then algebra it out
     let x = 26501365i128;
     let (a, b, c) = (14871i128, 32425i128, -137664i128);
     let denom = 17161i128;
-    let predicted:i128 = (a * (x*x) + b * x + c) / denom;
+    let predicted: i128 = (a * (x * x) + b * x + c) / denom;
     eprintln!("{}", predicted); // 608603023105276
 }
 
@@ -197,7 +197,10 @@ fn p2_test() {
     for steps in (327i128..=1113).step_by(262) {
         let m: HashMap<(isize, isize), isize> = track_visits(&garden, steps as isize, true);
         let simulated = m.values().filter(|&&steps| steps % 2 == 1).count() as isize;
-        let predicted = (a * (steps*steps) + b * steps + c) / denom;
-        eprintln!("{steps:8}\t{simulated:8}\t{:8}", predicted - (simulated as i128));
+        let predicted = (a * (steps * steps) + b * steps + c) / denom;
+        eprintln!(
+            "{steps:8}\t{simulated:8}\t{:8}",
+            predicted - (simulated as i128)
+        );
     }
 }
