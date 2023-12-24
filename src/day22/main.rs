@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 use itertools::Itertools;
 use shared::puzzle_input;
@@ -9,7 +9,7 @@ struct StackData {
     height: u16,
 }
 
-fn p1(input: &str) -> usize {
+fn parse(input: &str) -> (HashMap<u16, HashSet<u16>>, HashMap<u16, HashSet<u16>>) {
     let bricks = input
         .trim()
         .split('\n')
@@ -32,8 +32,8 @@ fn p1(input: &str) -> usize {
         brick_id: 0,
         height: 0,
     }; 10]; 10];
-    let mut supports: HashMap<u16, HashSet<u16>> = HashMap::new();
-    let mut is_supported_by: HashMap<u16, HashSet<u16>> = HashMap::new();
+    let mut supports: HashMap<u16, HashSet<u16>> = bricks.clone().map(|(id,_)|(id, HashSet::new())).collect();
+    let mut is_supported_by: HashMap<u16, HashSet<u16>> = supports.clone();
     for (brick_id, ((x1, y1, z1), (x2, y2, z2))) in bricks.clone() {
         debug_assert!(x2 >= x1);
         debug_assert!(y2 >= y1);
@@ -51,11 +51,11 @@ fn p1(input: &str) -> usize {
                 if data.brick_id != 0 {
                     if data.height == supported_at_height {
                         supports.entry(data.brick_id).or_default().insert(brick_id);
+                        is_supported_by
+                            .entry(brick_id)
+                            .or_default()
+                            .insert(data.brick_id);
                     }
-                    is_supported_by
-                        .entry(brick_id)
-                        .or_default()
-                        .insert(data.brick_id);
                 }
             }
         }
@@ -64,31 +64,22 @@ fn p1(input: &str) -> usize {
             stack_data[y as usize][x as usize].brick_id = brick_id;
             stack_data[y as usize][x as usize].height = brick_top;
         }
-
-        // eprintln!("added brick {brick_id}");
-        // for row in &stack_data {
-        //     for data in row {
-        //         let star = if data.brick_id == brick_id {
-        //             '*'
-        //         } else {
-        //             ' '
-        //         };
-        //         eprint!("{:4}{star}", data.height);
-        //     }
-        //     eprintln!();
-        // }
-        // eprintln!();
     }
+    (supports, is_supported_by)
+}
 
-    bricks
-        .filter(|(id, _)| {
+fn p1(supports: &HashMap<u16, HashSet<u16>>, is_supported_by: &HashMap<u16, HashSet<u16>>) -> usize {
+    supports
+        .keys()
+        .filter(|id| {
             if let Some(supported_bricks) = supports.get(id) {
-                supported_bricks.iter().all(|supported_id| {
+                let can_go = supported_bricks.iter().all(|supported_id| {
                     is_supported_by
                         .get(supported_id)
                         .map(|s| s.len() > 1)
                         .unwrap_or(false)
-                })
+                });
+                can_go
             } else {
                 true
             }
@@ -96,25 +87,71 @@ fn p1(input: &str) -> usize {
         .count()
 }
 
+fn p2(supports: &HashMap<u16, HashSet<u16>>, is_supported_by: &HashMap<u16, HashSet<u16>>) -> usize {
+    supports
+        .keys()
+        .map(|id| {
+            let mut falls: HashSet<u16> = HashSet::new();
+
+            let mut q = VecDeque::from([*id]);
+            while let Some(id) = q.pop_front() {
+                if let Some(supported_ids) = supports.get(&id) {
+                    for supported_id in supported_ids {
+                        if let Some(supporters) = is_supported_by.get(supported_id) {
+                            let supporters: HashSet<_> = supporters.difference(&falls).collect();
+                            if supporters.is_empty() || (supporters.len() == 1 && supporters.contains(&id)) {
+                                if falls.insert(*supported_id) {
+                                    q.push_back(*supported_id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            falls.len()
+        })
+        .sum::<usize>()
+}
+
 fn main() {
     let input = puzzle_input!();
-    println!("{}", p1(&input)); // < 1152
+    let (supports, is_supported_by) = parse(&input);
+    println!("{}", p1(&supports, &is_supported_by)); // 480
+    println!("{}", p2(&supports, &is_supported_by) ); // 84021
 }
 
 #[cfg(test)]
 const EXAMPLE: &str = r"1,0,1~1,2,1
 0,0,2~2,0,2
-1,1,8~1,1,9
 0,2,3~2,2,3
 0,0,4~0,2,4
 2,0,5~2,2,5
 0,1,6~2,1,6
+1,1,8~1,1,9
+";
+
+#[cfg(test)]
+const EXAMPLE2: &str = r"0,0,1~0,5,1
+0,0,11~0,5,11
+0,0,21~0,5,21
+0,6,1~0,9,1
+0,0,2~0,0,2
+0,3,2~0,8,2
 ";
 
 #[test]
 fn p1_example() {
-    assert_eq!(p1(EXAMPLE), 5);
+    let (supports, is_supported_by) = parse(EXAMPLE);
+    assert_eq!(p1(&supports, &is_supported_by), 5);
+}
+#[test]
+fn p1_example_2() {
+    let (supports, is_supported_by) = parse(EXAMPLE2);
+    assert_eq!(p1(&supports, &is_supported_by), 4);
 }
 
 #[test]
-fn p2_example() {}
+fn p2_example() {
+    let (supports, is_supported_by) = parse(EXAMPLE);
+    assert_eq!(p2(&supports, &is_supported_by), 7);
+}
