@@ -32,13 +32,17 @@ fn parse(input: &str) -> (HashMap<u16, HashSet<u16>>, HashMap<u16, HashSet<u16>>
         brick_id: 0,
         height: 0,
     }; 10]; 10];
-    let mut supports: HashMap<u16, HashSet<u16>> = bricks.clone().map(|(id,_)|(id, HashSet::new())).collect();
+    let mut supports: HashMap<u16, HashSet<u16>> =
+        bricks.clone().map(|(id, _)| (id, HashSet::new())).collect();
     let mut is_supported_by: HashMap<u16, HashSet<u16>> = supports.clone();
     for (brick_id, ((x1, y1, z1), (x2, y2, z2))) in bricks.clone() {
         debug_assert!(x2 >= x1);
         debug_assert!(y2 >= y1);
         debug_assert!(z2 >= z1);
-        debug_assert!(matches!((x2-x1, y2-y1, z2-z1), (0,0,_) | (0,_,0) | (_, 0, 0)));
+        debug_assert!(matches!(
+            (x2 - x1, y2 - y1, z2 - z1),
+            (0, 0, _) | (0, _, 0) | (_, 0, 0)
+        ));
         let brick_xys = (x1..=x2).cartesian_product(y1..=y2);
         let supported_at_height = brick_xys
             .clone()
@@ -48,14 +52,12 @@ fn parse(input: &str) -> (HashMap<u16, HashSet<u16>>, HashMap<u16, HashSet<u16>>
         if supported_at_height > 0 {
             for (x, y) in brick_xys.clone() {
                 let data = &stack_data[y as usize][x as usize];
-                if data.brick_id != 0 {
-                    if data.height == supported_at_height {
-                        supports.entry(data.brick_id).or_default().insert(brick_id);
-                        is_supported_by
-                            .entry(brick_id)
-                            .or_default()
-                            .insert(data.brick_id);
-                    }
+                if data.brick_id != 0 && data.height == supported_at_height {
+                    supports.entry(data.brick_id).or_default().insert(brick_id);
+                    is_supported_by
+                        .entry(brick_id)
+                        .or_default()
+                        .insert(data.brick_id);
                 }
             }
         }
@@ -68,7 +70,10 @@ fn parse(input: &str) -> (HashMap<u16, HashSet<u16>>, HashMap<u16, HashSet<u16>>
     (supports, is_supported_by)
 }
 
-fn p1(supports: &HashMap<u16, HashSet<u16>>, is_supported_by: &HashMap<u16, HashSet<u16>>) -> usize {
+fn p1(
+    supports: &HashMap<u16, HashSet<u16>>,
+    is_supported_by: &HashMap<u16, HashSet<u16>>,
+) -> usize {
     supports
         .keys()
         .filter(|id| {
@@ -87,7 +92,10 @@ fn p1(supports: &HashMap<u16, HashSet<u16>>, is_supported_by: &HashMap<u16, Hash
         .count()
 }
 
-fn p2(supports: &HashMap<u16, HashSet<u16>>, is_supported_by: &HashMap<u16, HashSet<u16>>) -> usize {
+fn p2(
+    supports: &HashMap<u16, HashSet<u16>>,
+    is_supported_by: &HashMap<u16, HashSet<u16>>,
+) -> usize {
     supports
         .keys()
         .map(|id| {
@@ -99,10 +107,11 @@ fn p2(supports: &HashMap<u16, HashSet<u16>>, is_supported_by: &HashMap<u16, Hash
                     for supported_id in supported_ids {
                         if let Some(supporters) = is_supported_by.get(supported_id) {
                             let supporters: HashSet<_> = supporters.difference(&falls).collect();
-                            if supporters.is_empty() || (supporters.len() == 1 && supporters.contains(&id)) {
-                                if falls.insert(*supported_id) {
-                                    q.push_back(*supported_id);
-                                }
+                            if (supporters.is_empty()
+                                || (supporters.len() == 1 && supporters.contains(&id)))
+                                && falls.insert(*supported_id)
+                            {
+                                q.push_back(*supported_id);
                             }
                         }
                     }
@@ -117,7 +126,7 @@ fn main() {
     let input = puzzle_input!();
     let (supports, is_supported_by) = parse(&input);
     println!("{}", p1(&supports, &is_supported_by)); // 480
-    println!("{}", p2(&supports, &is_supported_by) ); // 84021
+    println!("{}", p2(&supports, &is_supported_by)); // 84021
 }
 
 #[cfg(test)]
