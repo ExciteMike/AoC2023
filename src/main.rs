@@ -202,5 +202,5 @@ fn day24() {
 }
 #[test]
 fn day25() {
-    do_test(25, 0, 0);
+    do_test(25, 592171, "");
 }
