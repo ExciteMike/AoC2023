@@ -1,18 +1,17 @@
-use std::collections::{HashMap, HashSet};
-
+use rustc_hash::{FxHashMap, FxHashSet};
 use shared::puzzle_input;
 
 // vert in left most tightly connected to right.
-fn most_tightly_connected_vert<'a>(
-    left: &mut HashSet<&'a str>,
-    right: &mut HashSet<&'a str>,
-    edges: &HashMap<&'a str, HashSet<&'a str>>,
-) -> &'a str {
-    let mut tightest_vert = "";
+fn most_tightly_connected_vert(
+    left: &mut FxHashSet<u32>,
+    right: &mut FxHashSet<u32>,
+    edges: &FxHashMap<u32, Vec<u32>>,
+) -> u32 {
+    let mut tightest_vert = 0;
     let mut connections = 0;
     for vert in left.iter().copied() {
         let mut n_connections = 0;
-        for other in edges.get(vert).unwrap().iter().copied() {
+        for other in edges.get(&vert).unwrap().iter() {
             if right.contains(other) {
                 n_connections += 1;
             }
@@ -25,14 +24,14 @@ fn most_tightly_connected_vert<'a>(
     tightest_vert
 }
 
-fn count_cuts<'a>(
-    left: &HashSet<&'a str>,
-    right: &HashSet<&'a str>,
-    edges: &HashMap<&'a str, HashSet<&'a str>>,
+fn count_cuts(
+    left: &FxHashSet<u32>,
+    right: &FxHashSet<u32>,
+    edges: &FxHashMap<u32, Vec<u32>>,
 ) -> usize {
     let mut total = 0;
-    for vert in left.iter().copied() {
-        for other in edges.get(vert).unwrap().iter().copied() {
+    for vert in left.iter() {
+        for other in edges.get(vert).unwrap().iter() {
             if right.contains(other) {
                 total += 1;
             }
@@ -41,36 +40,49 @@ fn count_cuts<'a>(
     total
 }
 
-fn p1(input: &str) -> usize {
-    let mut m = HashMap::<&str, HashSet<&str>>::new();
+fn solution(input: &str) -> usize {
+    let mut m: FxHashMap<u32, Vec<u32>> = FxHashMap::default();
+    m.reserve(1300);
     for line in input.trim().split('\n') {
         let (a, bs) = line.split_once(": ").unwrap();
+        let a = u32::from_str_radix(a, 36).unwrap();
         for b in bs.split_ascii_whitespace() {
-            m.entry(a).or_default().insert(b);
-            m.entry(b).or_default().insert(a);
+            let b = u32::from_str_radix(b, 36).unwrap();
+            m.entry(a).or_insert_with(||Vec::with_capacity(9)).push(b);
+            m.entry(b).or_insert_with(||Vec::with_capacity(9)).push(a);
         }
     }
-    let mut left = m.keys().copied().collect::<HashSet<_>>();
+    let mut left = m.keys().copied().collect::<FxHashSet<_>>();
     let arbitrary_vert = m.keys().copied().next().unwrap();
-    let mut right = HashSet::from([arbitrary_vert]);
-    while left.len() > 1 {
+    let mut right = FxHashSet::default();
+    right.reserve(left.len());
+    right.insert(arbitrary_vert);
+    left.remove(&arbitrary_vert);
+    while count_cuts(&left, &right, &m) != 3 {
         let v = most_tightly_connected_vert(&mut left, &mut right, &m);
-        if !v.is_empty() {
-            left.remove(v);
-            right.insert(v);
-        }
-        let cuts = count_cuts(&left, &right, &m);
-        if cuts == 3 {
-            return left.len() * right.len();
-        }
+        debug_assert!(0 != v);
+        left.remove(&v);
+        right.insert(v);
     }
 
-    unreachable!();
+    left.len() * right.len()
 }
 
 fn main() {
     let input = puzzle_input!();
-    println!("{}\n", p1(&input)); // 592171
+
+    const N_TIMES: u32 = 100;
+    use std::time::Instant;
+    let now = Instant::now();
+    let mut ans = 0;
+    for _ in 0..N_TIMES {
+        ans = solution(&input);
+    }
+
+    println!("{ans}\n"); // 592171
+
+    let elapsed = now.elapsed();
+    eprintln!("Completed in average of {:.2?}", elapsed / N_TIMES);
 }
 
 #[cfg(test)]
@@ -91,5 +103,5 @@ frs: qnr lhk lsr
 
 #[test]
 fn p1_example() {
-    assert_eq!(p1(EXAMPLE), 54);
+    assert_eq!(solution(EXAMPLE), 54);
 }
